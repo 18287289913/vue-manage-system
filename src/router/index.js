@@ -4,9 +4,9 @@ import Home from "../views/Home.vue";
 const routes = [
     {
         path: '/',
-        redirect: '/dashboard'
+        redirect: '/login'
     }, {
-        path: "/",
+        path: "/home",
         name: "Home",
         component: Home,
         children: [
@@ -46,13 +46,6 @@ const routes = [
                 },
                 component: () => import ( /* webpackChunkName: "tabs" */ "../views/Tabs.vue")
             }, {
-                path: "/donate",
-                name: "donate",
-                meta: {
-                    title: '鼓励作者'
-                },
-                component: () => import ( /* webpackChunkName: "donate" */ "../views/Donate.vue")
-            }, {
                 path: "/permission",
                 name: "permission",
                 meta: {
@@ -60,13 +53,6 @@ const routes = [
                     permission: true
                 },
                 component: () => import ( /* webpackChunkName: "permission" */ "../views/Permission.vue")
-            }, {
-                path: "/i18n",
-                name: "i18n",
-                meta: {
-                    title: '国际化语言'
-                },
-                component: () => import ( /* webpackChunkName: "i18n" */ "../views/I18n.vue")
             }, {
                 path: "/upload",
                 name: "upload",
@@ -103,12 +89,12 @@ const routes = [
                 },
                 component: () => import (/* webpackChunkName: "user" */ '../views/User.vue')
             }, {
-                path: '/editor',
-                name: 'editor',
+                path: '/new',
+                name: 'new',
                 meta: {
-                    title: '富文本编辑器'
+                    title: 'new'
                 },
-                component: () => import (/* webpackChunkName: "editor" */ '../views/Editor.vue')
+                component: () =>import('../views/New.vue')
             }
         ]
     }, {

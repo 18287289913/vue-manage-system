@@ -61,7 +61,7 @@
                             <div class="grid-content grid-con-3">
                                 <i class="el-icon-s-goods grid-con-icon"></i>
                                 <div class="grid-cont-right">
-                                    <div class="grid-num">5000</div>
+                                    <div class="grid-num">888</div>
                                     <div>数量</div>
                                 </div>
                             </div>

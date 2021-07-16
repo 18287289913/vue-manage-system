@@ -59,7 +59,7 @@ export default {
                 if (valid) {
                     ElMessage.success("登录成功");
                     localStorage.setItem("ms_username", param.username);
-                    router.push("/");
+                    router.push("/dashboard");
                 } else {
                     ElMessage.error("登录成功");
                     return false;
