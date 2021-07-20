@@ -1,6 +1,7 @@
 
 <template>
   <div>
+    <el-button type="primary" @click="add()">添加</el-button>
     <el-table :data="tableData">
       <el-table-column prop="id" label="ID" width="100"></el-table-column>
       <el-table-column prop="userName" label="姓名"></el-table-column>
@@ -14,38 +15,19 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="编辑用户" v-model="dialogVisible" width="30%" :before-close="handleClose">
-      <div>
-        <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="姓名">
-            <el-input v-model="form.userName"></el-input>
-          </el-form-item>
-          <el-form-item label="年龄">
-            <el-input v-model="form.age"></el-input>
-          </el-form-item>
-          <el-form-item label="电话">
-            <el-input v-model="form.mobile_phone"></el-input>
-          </el-form-item>
-          <el-form-item label="性别">
-            <el-radio v-model="form.sex" label="男">男</el-radio>
-            <el-radio v-model="form.sex" label="女">女</el-radio>
-          </el-form-item>
-        </el-form>
-      </div>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="edit()">确 定</el-button>
-        </span>
-      </template>
-    </el-dialog>
+    <addDialog ref="add"></addDialog>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import { ElMessage } from "element-plus";
+import addDialog from "./dialog.vue"
+import api from "../api/index"
 export default {
+  components: {
+    addDialog
+  },
   data() {
     return {
       form: {
@@ -55,16 +37,7 @@ export default {
         mobile_phone: "",
         id: ""
       },
-      dialogVisible: false,
-      tableData: [
-        {
-          id: "1",
-          userName: "王小虎",
-          sex: "男",
-          age: "30",
-          mobile_phone: "1231561"
-        }
-      ]
+      tableData: []
     };
   },
   created() {
@@ -72,81 +45,47 @@ export default {
   },
   methods: {
     getTableData() {
-      axios({
-        url: "http://localhost:3012/wjsyncservice/user/findall",
-        method: "get"
-      }).then(res => {
-        // console.log(res);
+      api.getUserList().then(res => {
+        let data = res.data.data;
         this.tableData = [];
-        for (let i = 0; i < res.data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           let obj = {};
-          obj.id = res.data[i].id;
-          obj.userName = res.data[i].userName;
-          obj.age = res.data[i].age;
-          obj.mobile_phone = res.data[i].mobile_phone;
-          if (res.data[i].sex == 0) {
-            obj.sex = "女";
-          } else {
-            obj.sex = "男";
-          }
+          obj.id = data[i].id;
+          obj.userName = data[i].userName;
+          obj.age = data[i].age;
+          obj.mobile_phone = data[i].mobile_phone;
+          data[i].sex == 0? obj.sex = "女":obj.sex = "男";
           this.tableData.push(obj);
         }
-      });
+      }).catch(err => console.log(err))
     },
     handleEdit(index, row) {
-      console.log(index, row);
-      this.form.userName = row.userName;
-      this.form.sex = row.sex;
-      this.form.age = row.age;
-      this.form.mobile_phone = row.mobile_phone;
-      this.form.id = row.id;
-      this.dialogVisible = !this.dialogVisible;
+      let dialogForm = this.$refs.add.form;
+      dialogForm.userName = row.userName;
+      dialogForm.sex = row.sex;
+      dialogForm.age = row.age;
+      dialogForm.mobile_phone = row.mobile_phone;
+      dialogForm.id = row.id;
+      this.$refs.add.title = "编辑用户";
+      this.$refs.add.dialogVisible = !this.$refs.add.dialogVisible;
     },
     handleDelete(index, row) {
-      console.log(index, row);
-      axios({
-        url: "http://localhost:3012/wjsyncservice/user/delete",
-        method: "post",
-        params: {
-          id: row.id
-        }
-      }).then(res => {
-        console.log(res);
+      let params = {
+        id: row.id
+      }
+      api.deleteUser(params).then(res => {
         this.getTableData();
-        if (res.data == "success") {
+        if (res.data.msg == "success") {
           ElMessage.success("删除成功！");
         } else {
           ElMessage.error("删除失败！");
         }
-      });
-    },
-    edit() {
-      if(this.form.sex == "男") {
-        this.form.sex = 1;
-      } else {
-        this.form.sex = 0;
-      }
-      axios({
-        url: "http://localhost:3012/wjsyncservice/user/update",
-        method: "post",
-        params: {
-          id: this.form.id,
-          userName: this.form.userName,
-          sex: this.form.sex,
-          age: this.form.age,
-          mobile_phone: this.form.mobile_phone,
-          password: "123456"
-        }
-      }).then(res => {
-        console.log(res)
-        if (res.data == "success") {
-          ElMessage.success("修改成功！");
-          this.getTableData();
-        } else {
-          ElMessage.error("修改失败！");
-        }
-        this.dialogVisible = !this.dialogVisible;
       })
+    },
+    add() {
+      this.$refs.add.title = "添加用户";
+      this.$refs.add.form = {};
+      this.$refs.add.dialogVisible = !this.$refs.add.dialogVisible;
     }
   }
 };

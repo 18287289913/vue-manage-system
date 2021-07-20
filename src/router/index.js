@@ -1,5 +1,8 @@
 import {createRouter, createWebHashHistory} from "vue-router";
 import Home from "../views/Home.vue";
+import api from "../api/index";
+import { ElMessage } from "element-plus";
+import { useStore } from "vuex";
 
 const routes = [
     {
@@ -17,20 +20,6 @@ const routes = [
                     title: '系统首页'
                 },
                 component: () => import ( /* webpackChunkName: "dashboard" */ "../views/Dashboard.vue")
-            }, {
-                path: "/table",
-                name: "basetable",
-                meta: {
-                    title: '表格'
-                },
-                component: () => import ( /* webpackChunkName: "table" */ "../views/BaseTable.vue")
-            }, {
-                path: "/charts",
-                name: "basecharts",
-                meta: {
-                    title: '图表'
-                },
-                component: () => import ( /* webpackChunkName: "charts" */ "../views/BaseCharts.vue")
             }, {
                 path: "/form",
                 name: "baseform",
@@ -112,19 +101,48 @@ const router = createRouter({
     routes
 });
 
+
+// router.beforeEach((to, from, next) => {
+//     document.title = `${to.meta.title} | vue-manage-system`;
+//     const role = localStorage.getItem('ms_username');
+//     if (!role && to.path !== '/login') {
+//         next('/login');
+//     } else if (to.meta.permission) {
+//         // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
+//         role === 'admin'
+//             ? next()
+//             : next('/403');
+//     } else {
+//         next();
+//     }
+// });
+
 router.beforeEach((to, from, next) => {
-    document.title = `${to.meta.title} | vue-manage-system`;
-    const role = localStorage.getItem('ms_username');
-    if (!role && to.path !== '/login') {
-        next('/login');
-    } else if (to.meta.permission) {
-        // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
-        role === 'admin'
-            ? next()
-            : next('/403');
-    } else {
+  // if(to.path == '/' | to.path == '/login') {
+  //   next();
+  // }
+  let token = localStorage.getItem("token");
+  if(token) {
+    api.checkToken().then(res => {
+      // console.log(res);
+      if(res.data.msg == "success") {
         next();
-    }
-});
+      } else if (res.data.msg == "expired") {
+        // console.log(res);
+        ElMessage.error("登录过期，请重新登录！");
+        localStorage.setItem("token", "");
+        next("/login");
+      } else {
+        if (to.path == '/' | to.path == '/login') {
+          next();
+        } else {
+          next("/login");
+        }
+      }
+    })
+  } else {
+    next();
+  }
+})
 
 export default router;

@@ -1,9 +1,23 @@
-import request from '../utils/request';
+import http from '../utils/http'
 
-export const fetchData = query => {
-    return request({
-        url: './table.json',
-        method: 'get',
-        params: query
-    });
-};
+// let request = "/dev-api/request/"
+export default{
+  login(params) {
+    return http.post(`/user/login`, params);
+  },
+  checkToken(params) {
+    return http.post("/user/token", params);
+  },
+  getUserList() {
+    return http.get("/user/findall");
+  },
+  deleteUser(params) {
+    return http.post("/user/delete", params);
+  },
+  updateUser(params) {
+    return http.post("/user/update", params);
+  },
+  addUser(params) {
+    return http.post("/user/add", params);
+  }
+}
