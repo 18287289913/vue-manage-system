@@ -4,6 +4,7 @@ const service = axios.create({
   // 公共接口
   // baseURL: process.env.BASE_API,
   baseURL: "http://localhost:3012",
+  // baseURL: "/",
   // 超时时间 单位是ms
   timeout: 5000
 })

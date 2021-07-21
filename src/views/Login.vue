@@ -25,7 +25,7 @@
         <div class="login-btn">
           <el-button type="primary" @click="submitForm()">登录</el-button>
         </div>
-        <!-- <p class="login-tips">Tips : 用户名和密码随便填。</p> -->
+        <p class="login-tips">账号：admin 密码：123456789</p>
       </el-form>
     </div>
   </div>
@@ -42,8 +42,8 @@ export default {
   setup() {
     const router = useRouter();
     const param = reactive({
-      username: "jack",
-      password: "110"
+      username: "admin",
+      password: "123456789"
     });
 
     const rules = {
@@ -52,9 +52,13 @@ export default {
           required: true,
           message: "请输入用户名",
           trigger: "blur"
-        }
+        },
+        { min: 5, max: 15, message: "长度在 5 到 15 个字符", trigger: "blur" }
       ],
-      password: [{ required: true, message: "请输入密码", trigger: "blur" }]
+      password: [
+        { required: true, message: "请输入密码", trigger: "blur" },
+        { min: 8, max: 15, message: "长度在 8 到 15 个字符", trigger: "blur" }
+      ]
     };
     const login = ref(null);
     const submitForm = () => {
@@ -70,6 +74,7 @@ export default {
               ElMessage.success("登录成功");
               localStorage.setItem("username", param.username);
               localStorage.setItem("token", res.data.data.token);
+              localStorage.setItem("permission", res.data.data.permission)
               router.push("/dashboard");
             } else {
               ElMessage.error("账号或密码错误");

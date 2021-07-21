@@ -2,7 +2,6 @@ import {createRouter, createWebHashHistory} from "vue-router";
 import Home from "../views/Home.vue";
 import api from "../api/index";
 import { ElMessage } from "element-plus";
-import { useStore } from "vuex";
 
 const routes = [
     {
@@ -21,20 +20,6 @@ const routes = [
                 },
                 component: () => import ( /* webpackChunkName: "dashboard" */ "../views/Dashboard.vue")
             }, {
-                path: "/form",
-                name: "baseform",
-                meta: {
-                    title: '表单'
-                },
-                component: () => import ( /* webpackChunkName: "form" */ "../views/BaseForm.vue")
-            }, {
-                path: "/tabs",
-                name: "tabs",
-                meta: {
-                    title: 'tab标签'
-                },
-                component: () => import ( /* webpackChunkName: "tabs" */ "../views/Tabs.vue")
-            }, {
                 path: "/permission",
                 name: "permission",
                 meta: {
@@ -42,20 +27,6 @@ const routes = [
                     permission: true
                 },
                 component: () => import ( /* webpackChunkName: "permission" */ "../views/Permission.vue")
-            }, {
-                path: "/upload",
-                name: "upload",
-                meta: {
-                    title: '上传插件'
-                },
-                component: () => import ( /* webpackChunkName: "upload" */ "../views/Upload.vue")
-            }, {
-                path: "/icon",
-                name: "icon",
-                meta: {
-                    title: '自定义图标'
-                },
-                component: () => import ( /* webpackChunkName: "icon" */ "../views/Icon.vue")
             }, {
                 path: '/404',
                 name: '404',
@@ -84,6 +55,20 @@ const routes = [
                     title: 'new'
                 },
                 component: () =>import('../views/New.vue')
+            }, {
+              path: "/vipquery",
+              name: "vipquery",
+              meta: {
+                title: "会员查询"
+              },
+              component: () =>import("../views/VipQuery.vue")
+            }, {
+              path: "/orderquery",
+              name: "orderquery",
+              meta: {
+                title: "订单查询"
+              },
+              component: () =>import("../views/OrderQuery.vue")
             }
         ]
     }, {
@@ -102,25 +87,7 @@ const router = createRouter({
 });
 
 
-// router.beforeEach((to, from, next) => {
-//     document.title = `${to.meta.title} | vue-manage-system`;
-//     const role = localStorage.getItem('ms_username');
-//     if (!role && to.path !== '/login') {
-//         next('/login');
-//     } else if (to.meta.permission) {
-//         // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
-//         role === 'admin'
-//             ? next()
-//             : next('/403');
-//     } else {
-//         next();
-//     }
-// });
-
 router.beforeEach((to, from, next) => {
-  // if(to.path == '/' | to.path == '/login') {
-  //   next();
-  // }
   let token = localStorage.getItem("token");
   if(token) {
     api.checkToken().then(res => {
@@ -129,8 +96,9 @@ router.beforeEach((to, from, next) => {
         next();
       } else if (res.data.msg == "expired") {
         // console.log(res);
-        ElMessage.error("登录过期，请重新登录！");
+        ElMessage.error("登录超时，请重新登录！");
         localStorage.setItem("token", "");
+        localStorage.setItem("username", "");
         next("/login");
       } else {
         if (to.path == '/' | to.path == '/login') {
@@ -140,6 +108,15 @@ router.beforeEach((to, from, next) => {
         }
       }
     })
+  } else {
+    next();
+  }
+})
+
+router.beforeEach((to, from, next) => {
+  let permission = localStorage.getItem("permission");
+  if(to.path == '/permission') {
+    permission == 1?next():next('/403');
   } else {
     next();
   }

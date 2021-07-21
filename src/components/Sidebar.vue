@@ -44,29 +44,19 @@ export default {
                 title: "系统首页",
             },
             {
-                icon: "el-icon-lx-copy",
-                index: "/tabs",
-                title: "tab选项卡",
-            },
-            {
-                icon: "el-icon-lx-calendar",
-                index: "3",
-                title: "表单相关",
+              icon: "el-icon-lx-calendar",
+                index: "1",
+                title: "会员",
                 subs: [
-                    {
-                        index: "/form",
-                        title: "基本表单",
-                    },
-                    {
-                        index: "/upload",
-                        title: "文件上传",
-                    }
-                ],
-            },
-            {
-                icon: "el-icon-lx-emoji",
-                index: "/icon",
-                title: "自定义图标",
+                  {
+                    index: "/vipquery",
+                    title: "会员查询"
+                  },
+                  {
+                    index: "/orderquery",
+                    title: "订单查询"
+                  }
+                ]
             },
             {
                 icon: "el-icon-lx-warn",
